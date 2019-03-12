@@ -1,0 +1,19 @@
+{
+  "name": "tinyapp",
+  "version": "1.0.0",
+  "description": "exercise for lighthouse labs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hanniesm/app.git"
+  },
+  "author": "Hannah Sutton-Molnar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hanniesm/app/issues"
+  },
+  "homepage": "https://github.com/hanniesm/app#readme"
+}
