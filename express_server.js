@@ -1,3 +1,8 @@
+//Am up to replacing the cookie username with cookie id. I've changed the create cookie function to pass the cookie ID instead
+//Next I need to replace the cookieusername in the template vars to look up the user based on the cookie ID.
+//Possibly I've approached this wrong, so might need to get some help from a mentor tomorrow.
+
+
 var express = require("express");
 var cookieParser = require('cookie-parser')
 var app = express();
@@ -5,6 +10,9 @@ var PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 app.use(cookieParser())
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: true}));
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -24,7 +32,7 @@ const users = {
   }
 }
 
-
+//function creates a random number for the addUserID
 const randomID = () => {
   return "user" + Math.floor((Math.random() * 100) + 1) + "RandomID";
 }
@@ -41,8 +49,24 @@ const addUser = (email, password) => {
   users[id] = newUser;
 }
 
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
+const emailLookup = (email) => {
+  for (var user in users) {
+    if (user.email === email) {
+      return true
+    }
+  }
+}
+
+//this function looks up the id given the email address.
+const emailIDLookup = (email) => {
+  const usersArray = Object.values(users)
+  for (var user in usersArray) {
+    if (usersArray[user].email === email) {
+      console.log(usersArray[user].id)
+      return usersArray[user].id
+    }
+  }
+}
 
 //this function generates the shortURL
 function generateRandomstring() {
@@ -116,12 +140,22 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls")
 })
 
+//This is the function I'm trying to replace
+
+// app.post("/login", (req, res) => {
+//   const cookieName = Object.keys(req.body);
+//   const cookieValue = Object.values(req.body);
+//   res.cookie(cookieName, cookieValue);
+//   res.redirect("/urls")
+// });
+
+//This is the replacement for the above. Rather than set the cookie as a name. It sets it with the id of the user.
 app.post("/login", (req, res) => {
-  const cookieName = Object.keys(req.body);
-  const cookieValue = Object.values(req.body);
-  res.cookie(cookieName, cookieValue);
+  const email = Object.values(req.body)[0];
+  const id = emailIDLookup(email)
+  res.cookie("id", id);
   res.redirect("/urls")
-});
+})
 
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
@@ -132,12 +166,14 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  if(email && password) {
+  if(email && password && emailLookup(email)) {
   addUser(email, password)
 
   res.redirect("/urls")
-  } else {
+  } else if (!email || !password) {
     throw "Come on...You need to enter an email and password"
+  } else {
+    throw "That email is already in the database"
   }
 })
 
