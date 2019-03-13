@@ -1,8 +1,10 @@
 var express = require("express");
+var cookieParser = require('cookie-parser')
 var app = express();
 var PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
+app.use(cookieParser())
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -16,6 +18,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 function generateRandomstring() {
   return Math.random().toString(36).substr(2,5);
 }
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -35,18 +38,20 @@ app.get("/urls.json", (req, res) => {
 // })
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index", templateVars);
 })
 
 //this loads the urls/new page which has the form
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = { username: req.cookies["username"] };
+  res.render("urls_new", templateVars);
 });
 
 //this loads the urls/:id pages
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  console.log(templateVars);
   res.render("urls_show", templateVars);
 })
 
@@ -72,9 +77,23 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  const shortURL = Object.keys(req.body)
+  const shortURL = Object.keys(req.body);
   const longURL = Object.values(req.body);
   urlDatabase[shortURL] = longURL;
+  res.redirect("/urls")
+})
+
+app.post("/login", (req, res) => {
+  const cookieName = Object.keys(req.body);
+  const cookieValue = Object.values(req.body);
+  res.cookie(cookieName, cookieValue);
+  res.redirect("/urls")
+});
+
+app.post("/logout", (req, res) => {
+  // const cookieName = req.body.username
+  // console.log(req.body);
+  res.clearCookie("username");
   res.redirect("/urls")
 })
 
