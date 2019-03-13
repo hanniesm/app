@@ -11,6 +11,36 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
+
+const randomID = () => {
+  return "user" + Math.floor((Math.random() * 100) + 1) + "RandomID";
+}
+
+const addUser = (email, password) => {
+  const id = randomID();
+
+  const newUser = {
+    id: id,
+    email: email,
+    password: password
+  }
+
+  users[id] = newUser;
+}
+
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -40,6 +70,9 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index", templateVars);
+})
+app.get("/register", (req, res) => {
+  res.render("registration");
 })
 
 //this loads the urls/new page which has the form
@@ -91,10 +124,21 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  // const cookieName = req.body.username
-  // console.log(req.body);
   res.clearCookie("username");
   res.redirect("/urls")
+})
+
+app.post("/register", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if(email && password) {
+  addUser(email, password)
+
+  res.redirect("/urls")
+  } else {
+    throw "Come on...You need to enter an email and password"
+  }
 })
 
 app.listen(PORT, () => {
