@@ -82,12 +82,10 @@ const userURLS = (id) => {
     return urls
 }
 
-
 //this function generates the shortURL
 function generateRandomstring() {
   return Math.random().toString(36).substr(2,5);
 }
-
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -107,8 +105,6 @@ app.get("/urls.json", (req, res) => {
 })
 */
 
-//Have changed cookie to userid. Need to check that this is actually working.
-//May also need to pass along the user informtion
 app.get("/urls", (req, res) => {
   const userId = req.cookies['userid'];
   const currentUser = users[userId];
@@ -124,9 +120,7 @@ app.get("/register", (req, res) => {
   res.render("registration", templateVars);
 })
 
-//this loads the urls/new page which has the form.
-//Have changed cookie to userid. Need to check that this is actually working.
-//May also need to pass along the user informtion
+//this loads the urls/new page which has the form to add a new url.
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies['userid'];
   const currentUser = users[userId];
@@ -139,8 +133,6 @@ app.get("/urls/new", (req, res) => {
 });
 
 //this loads the urls/:id pages.
-//Have changed cookie to userid. Need to check that this is actually working.
-//May also need to pass along the user informtion
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.cookies['userid'];
   const currentUser = users[userId];
@@ -155,7 +147,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //this will be used to redirect the short URL to the long URL
 app.get("/u/:shortURL" , (req, res) => {
- let longURL = urlDatabase[req.params.shortURL];
+ let longURL = urlDatabase[req.params.shortURL].longURL;
  res.redirect(`${longURL}`)
 })
 
@@ -169,7 +161,6 @@ app.post("/urls", (req, res) => {
     }
   urlDatabase[shortURL] = newURL;
  res.redirect(`/urls/${shortURL}`);
-  // res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -185,17 +176,7 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls")
 })
 
-//This is the function I'm trying to replace
-
-/*app.post("/login", (req, res) => {
-  const cookieName = Object.keys(req.body);
-  const cookieValue = Object.values(req.body);
-  res.cookie(cookieName, cookieValue);
-  res.redirect("/urls")
-});*/
-
-//This is the replacement for the above. Rather than set the cookie as a name. It sets it with the id of the user.
-//This should also be checking the password of the user.
+//this post checks whether the email and password match what is in the database, if so sets the cookie. If not throws an error.
 app.post("/login", (req, res) => {
   const email = Object.values(req.body)[0];
   const password = req.body.password;
