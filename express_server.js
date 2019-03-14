@@ -14,9 +14,9 @@ app.use(cookieParser())
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
 const users = {
@@ -102,7 +102,6 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   const userId = req.cookies['userid'];
   const currentUser = users[userId];
-  // console.log(currentUser);
   let templateVars = { urls: urlDatabase, username: currentUser ? currentUser.email : null }; //if no id then will return null
   res.render("urls_index", templateVars);
 })
