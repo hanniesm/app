@@ -3,9 +3,15 @@ const cookieParser = require('cookie-parser')
 const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require('bcrypt');
+const uuidv4 = require('uuid/v4');
+uuidv4();
 
 app.set("view engine", "ejs");
-app.use(cookieParser())
+app.use(cookieParser());
+// app.use(cookieSession(){
+//   name: 'session',
+//   keys: [uuidv4()]
+// })
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -64,7 +70,7 @@ const emailIDLookup = (email) => {
 const authenticate = (email, password) => {
   const usersArray = Object.values(users)
   for (var user in usersArray) {
-    if (usersArray[user].email === email && usersArray[user].password === password) {
+    if (usersArray[user].email === email && bcrypt.compareSync(password, users[user].password)) {
       return true;
     }
   }
@@ -188,6 +194,7 @@ app.post("/login", (req, res) => {
   }
 })
 
+//DO I need to pass shortURL and longURL here??
 app.get("/login", (req, res) => {
   const userId = req.cookies['userid'];
   const currentUser = users[userId];
@@ -211,7 +218,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 })
 
-//this request clears the cookies. Need to check that userid cookie is setting to make sure this is working correctly.
+//this request clears the cookies.
 app.post("/logout", (req, res) => {
   res.clearCookie('userid');
   res.redirect("/urls")
