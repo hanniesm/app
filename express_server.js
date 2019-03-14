@@ -3,8 +3,6 @@ const cookieSession = require('cookie-session')
 const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require('bcrypt');
-// const uuidv4 = require('uuid/v4');
-// uuidv4();
 
 app.set("view engine", "ejs");
 
@@ -32,7 +30,7 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   },
-}
+};
 
 const addUser = (email, password) => {
   const id = Object.keys(users).length + 1;
@@ -46,7 +44,6 @@ const addUser = (email, password) => {
   users[id] = newUser;
 }
 
-// Think this also needs to check the password
 const emailLookup = (email) => {
   for (let user in users) {
     if (user.email === email) {
@@ -57,35 +54,36 @@ const emailLookup = (email) => {
 
 //this function looks up the id given the email address.Does this need to be modified to also check the password. See where this is being used.
 const emailIDLookup = (email) => {
-  const usersArray = Object.values(users)
-  for (var user in usersArray) {
+  const usersArray = Object.values(users);
+  for (let user in usersArray) {
     if (usersArray[user].email === email) {
-      // console.log(usersArray[user].id)
-      return usersArray[user].id
+      return usersArray[user].id;
     }
   }
 }
 
-//Need to update this with bcrypt
+//authenticates the user based on the passed email and password
 const authenticate = (email, password) => {
-  const usersArray = Object.values(users)
-  for (var user in usersArray) {
+  const usersArray = Object.values(users);
+  for (let user in usersArray) {
     if (usersArray[user].email === email && bcrypt.compareSync(password, usersArray[user].password)) {
       return true;
     }
   }
 }
 
+//This filters the url database for the urls for a given user
 const userURLS = (id) => {
   const urls = [];
-  for (var url in urlDatabase)
+  for (let url in urlDatabase)
     if (urlDatabase[url].userID === id) {
-      urls.push(urlDatabase[url])
+      urls.push(urlDatabase[url]);
     }
-    return urls
+
+    return urls;
 }
 
-//this function generates the shortURL
+//this function generates a random string which is used for the shortURL
 function generateRandomstring() {
   return Math.random().toString(36).substr(2,5);
 }
@@ -102,12 +100,7 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-/*app.get("/urls", (req, res) => {
-  let templateVars = { greeting: 'Hello World' };
-  res.render("hello_world", templateVars);
-})
-*/
-
+//loads the urls page and sets the user information from the cookies.
 app.get("/urls", (req, res) => {
   const userId = req.session.user_id;
   const currentUser = users[userId];
@@ -131,7 +124,7 @@ app.get("/urls/new", (req, res) => {
     let templateVars = { username: currentUser ? currentUser.email : null };
     res.render("urls_new", templateVars);
   } else {
-    res.redirect("/urls")
+    res.redirect("/urls");
   }
 });
 
@@ -144,14 +137,14 @@ app.get("/urls/:shortURL", (req, res) => {
     longURL: urlDatabase[req.params.shortURL],
     username: currentUser ? currentUser.email : null
   };
-  // console.log(templateVars);
+
   res.render("urls_show", templateVars);
 })
 
 //this will be used to redirect the short URL to the long URL
 app.get("/u/:shortURL" , (req, res) => {
  let longURL = urlDatabase[req.params.shortURL].longURL;
- res.redirect(`${longURL}`)
+ res.redirect(`${longURL}`);
 })
 
 //this is used when the form is filled in. It redirects to /url/:shortID
@@ -161,9 +154,9 @@ app.post("/urls", (req, res) => {
   const newURL = {
     longURL: longURL,
     userId: req.session.user_id
-    }
+    };
   urlDatabase[shortURL] = newURL;
- res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -176,7 +169,7 @@ app.post("/urls/:id", (req, res) => {
   const shortURL = Object.keys(req.body);
   const longURL = Object.values(req.body);
   urlDatabase[shortURL] = longURL;
-  res.redirect("/urls")
+  res.redirect("/urls");
 })
 
 //this post checks whether the email and password match what is in the database, if so sets the cookie. If not throws an error.
@@ -186,11 +179,11 @@ app.post("/login", (req, res) => {
   const authenticated = authenticate(email, password);
 
   if (authenticated) {
-    const id = emailIDLookup(email)
+    const id = emailIDLookup(email);
     req.session.user_id = users[id]["id"];
-    res.redirect("/urls")
+    res.redirect("/urls");
   } else {
-    throw "403: Your email or password is incorrect. Please try again"
+    throw "403: Your email or password is incorrect. Please try again";
   }
 })
 
@@ -203,7 +196,8 @@ app.get("/login", (req, res) => {
     longURL: urlDatabase[req.params.shortURL],
     username: currentUser ? currentUser.email : null
   };
-  res.render("login", templateVars)
+
+  res.render("login", templateVars);
 })
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -214,14 +208,14 @@ app.get("/urls/:shortURL", (req, res) => {
     longURL: urlDatabase[req.params.shortURL],
     username: currentUser ? currentUser.email : null
   };
-  // console.log(templateVars);
+
   res.render("urls_show", templateVars);
 })
 
 //this request clears the cookies.
 app.post("/logout", (req, res) => {
   res.clearCookie('session');
-  res.redirect("/urls")
+  res.redirect("/urls");
 })
 
 app.post("/register", (req, res) => {
@@ -229,18 +223,17 @@ app.post("/register", (req, res) => {
   const password = bcrypt.hashSync(req.body.password, 10);
 
   if(email && password && !emailLookup(email)) {
-  addUser(email, password)
-  const id = emailIDLookup(email)
+  addUser(email, password);
+  const id = emailIDLookup(email);
   req.session.user_id = users[id]["id"];
-  // res.cookie('userid', id);
   res.redirect("/urls");
 
   } else if (!email || !password) {
-    throw "Come on...You need to enter an email and password"
+    throw "Come on...You need to enter an email and password";
   } else {
-    throw "That email is already in the database. Please login"
-  }
-})
+    throw "That email is already in the database. Please login";
+  };
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
