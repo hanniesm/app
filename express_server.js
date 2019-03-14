@@ -189,6 +189,29 @@ app.post("/login", (req, res) => {
   }
 })
 
+app.get("/login", (req, res) => {
+  const userId = req.cookies['userid'];
+  const currentUser = users[userId];
+  let templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    username: currentUser ? currentUser.email : null
+  };
+  res.render("login", templateVars)
+})
+
+app.get("/urls/:shortURL", (req, res) => {
+  const userId = req.cookies['userid'];
+  const currentUser = users[userId];
+  let templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    username: currentUser ? currentUser.email : null
+  };
+  // console.log(templateVars);
+  res.render("urls_show", templateVars);
+})
+
 //this request clears the cookies. Need to check that userid cookie is setting to make sure this is working correctly.
 app.post("/logout", (req, res) => {
   res.clearCookie('userid');
