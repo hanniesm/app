@@ -32,14 +32,8 @@ const users = {
   }
 }
 
-//function creates a random number for the addUserID
-// Instead of doing this use const user_id = Object.key(usersDb).length + 1;
-const randomID = () => {
-  return "user" + Math.floor((Math.random() * 100) + 1) + "RandomID";
-}
-
 const addUser = (email, password) => {
-  const id = randomID();
+  const id = Object.keys(users).length + 1;
 
   const newUser = {
     id: id,
