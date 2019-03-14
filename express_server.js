@@ -1,5 +1,5 @@
 const express = require("express");
-const cookieParser = require('cookie-parser')
+const cookieSession = require('cookie-session')
 const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require('bcrypt');
@@ -7,11 +7,11 @@ const uuidv4 = require('uuid/v4');
 uuidv4();
 
 app.set("view engine", "ejs");
-app.use(cookieParser());
-// app.use(cookieSession(){
-//   name: 'session',
-//   keys: [uuidv4()]
-// })
+// app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}));
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -109,7 +109,7 @@ app.get("/urls.json", (req, res) => {
 */
 
 app.get("/urls", (req, res) => {
-  const userId = req.cookies['userid'];
+  const userId = req.session.user_id;
   const currentUser = users[userId];
   const userURLSArr = userURLS(userId);
   let templateVars = { urls: userURLSArr, username: currentUser ? currentUser.email : null }; //if no id then will return null
@@ -117,7 +117,7 @@ app.get("/urls", (req, res) => {
 })
 
 app.get("/register", (req, res) => {
-  const userId = req.cookies['userid'];
+  const userId = req.session.user_id;
   const currentUser = users[userId];
   let templateVars = { username: currentUser ? currentUser.email : null };
   res.render("registration", templateVars);
@@ -125,7 +125,7 @@ app.get("/register", (req, res) => {
 
 //this loads the urls/new page which has the form to add a new url.
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies['userid'];
+  const userId = req.session.user_id;
   const currentUser = users[userId];
   if (currentUser) {
     let templateVars = { username: currentUser ? currentUser.email : null };
@@ -137,7 +137,7 @@ app.get("/urls/new", (req, res) => {
 
 //this loads the urls/:id pages.
 app.get("/urls/:shortURL", (req, res) => {
-  const userId = req.cookies['userid'];
+  const userId = req.session.user_id;
   const currentUser = users[userId];
   let templateVars = {
     shortURL: req.params.shortURL,
@@ -160,7 +160,7 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomstring()
   const newURL = {
     longURL: longURL,
-    userId: req.cookies['userid']
+    userId: req.session.user_id
     }
   urlDatabase[shortURL] = newURL;
  res.redirect(`/urls/${shortURL}`);
@@ -196,7 +196,7 @@ app.post("/login", (req, res) => {
 
 //DO I need to pass shortURL and longURL here??
 app.get("/login", (req, res) => {
-  const userId = req.cookies['userid'];
+  const userId = req.session.user_id;
   const currentUser = users[userId];
   let templateVars = {
     shortURL: req.params.shortURL,
@@ -207,7 +207,7 @@ app.get("/login", (req, res) => {
 })
 
 app.get("/urls/:shortURL", (req, res) => {
-  const userId = req.cookies['userid'];
+  const userId = req.session.user_id;
   const currentUser = users[userId];
   let templateVars = {
     shortURL: req.params.shortURL,
@@ -231,7 +231,8 @@ app.post("/register", (req, res) => {
   if(email && password && !emailLookup(email)) {
   addUser(email, password)
   const id = emailIDLookup(email)
-  res.cookie('userid', id);
+  req.session.user_id = users[id]["id"];
+  // res.cookie('userid', id);
   res.redirect("/urls");
 
   } else if (!email || !password) {
