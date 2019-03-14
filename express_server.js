@@ -102,7 +102,7 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   const userId = req.cookies['userid'];
   const currentUser = users[userId];
-  console.log(currentUser);
+  // console.log(currentUser);
   let templateVars = { urls: urlDatabase, username: currentUser ? currentUser.email : null }; //if no id then will return null
   res.render("urls_index", templateVars);
 })
@@ -131,7 +131,7 @@ app.get("/urls/:shortURL", (req, res) => {
     longURL: urlDatabase[req.params.shortURL],
     username: currentUser ? currentUser.email : null
   };
-  console.log(templateVars);
+  // console.log(templateVars);
   res.render("urls_show", templateVars);
 })
 
