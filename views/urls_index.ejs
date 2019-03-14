@@ -15,7 +15,6 @@
   <!-- This link isn't working obvs -->
   <% if (username) {%>
     <a href='/urls/new'>Create New Tiny URL</a>
-  <% } %>
   <h2>My URLs</h2>
   <ul>
     <% for (var url in urls) { %>
@@ -32,6 +31,7 @@
       </li>
     <% }; %>
   </ul>
+<% } %>
 
 </body>
 </html>
