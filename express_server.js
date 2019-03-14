@@ -64,8 +64,17 @@ const emailIDLookup = (email) => {
   const usersArray = Object.values(users)
   for (var user in usersArray) {
     if (usersArray[user].email === email) {
-      console.log(usersArray[user].id)
+      // console.log(usersArray[user].id)
       return usersArray[user].id
+    }
+  }
+}
+
+const authenticate = (email, password) => {
+  const usersArray = Object.values(users)
+  for (var user in usersArray) {
+    if (usersArray[user].email === email && usersArray[user].password === password) {
+      return true;
     }
   }
 }
@@ -97,11 +106,10 @@ app.get("/urls.json", (req, res) => {
 //Have changed cookie to userid. Need to check that this is actually working.
 //May also need to pass along the user informtion
 app.get("/urls", (req, res) => {
-// getting the userID from the cookies. Can be user ID or undefined -->
-  const userID = req.cookies['user_id'];
-//this gets users object from users DB. Can also be undefined -->
+  const userId = req.cookies['userid'];
   const currentUser = users[userId];
-  let templateVars = { urls: urlDatabase, username: currentUser ? currentUser.name : null }; //if no id then will return null
+  console.log(currentUser);
+  let templateVars = { urls: urlDatabase, username: currentUser ? currentUser.email : null }; //if no id then will return null
   res.render("urls_index", templateVars);
 })
 app.get("/register", (req, res) => {
@@ -112,7 +120,9 @@ app.get("/register", (req, res) => {
 //Have changed cookie to userid. Need to check that this is actually working.
 //May also need to pass along the user informtion
 app.get("/urls/new", (req, res) => {
-  let templateVars = { userid: req.cookies["userid"] };
+  const userId = req.cookies['userid'];
+  const currentUser = users[userId];
+  let templateVars = { username: currentUser ? currentUser.email : null };
   res.render("urls_new", templateVars);
 });
 
@@ -120,7 +130,13 @@ app.get("/urls/new", (req, res) => {
 //Have changed cookie to userid. Need to check that this is actually working.
 //May also need to pass along the user informtion
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], userid: req.cookies["userid"] };
+  const userId = req.cookies['userid'];
+  const currentUser = users[userId];
+  let templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    username: currentUser ? currentUser.email : null
+  };
   console.log(templateVars);
   res.render("urls_show", templateVars);
 })
@@ -167,14 +183,21 @@ app.post("/urls/:id", (req, res) => {
 //This should also be checking the password of the user.
 app.post("/login", (req, res) => {
   const email = Object.values(req.body)[0];
-  const id = emailIDLookup(email)
-  res.cookie("userid", id);
-  res.redirect("/urls")
+  const password = req.body.password;
+  const authenticated = authenticate(email, password);
+
+  if (authenticated) {
+    const id = emailIDLookup(email)
+    res.cookie('userid', id);
+    res.redirect("/urls")
+  } else {
+    throw "Your email or password is incorrect. Please try again"
+  }
 })
 
 //this request clears the cookies. Need to check that userid cookie is setting to make sure this is working correctly.
 app.post("/logout", (req, res) => {
-  res.clearCookie("userid");
+  res.clearCookie('userid');
   res.redirect("/urls")
 })
 
@@ -182,14 +205,16 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  if(email && password && emailLookup(email)) {
+  if(email && password && !emailLookup(email)) {
   addUser(email, password)
+  const id = emailIDLookup(email)
+  res.cookie('userid', id);
+  res.redirect("/urls");
 
-  res.redirect("/urls")
   } else if (!email || !password) {
     throw "Come on...You need to enter an email and password"
   } else {
-    throw "That email is already in the database"
+    throw "That email is already in the database. Please login"
   }
 })
 
