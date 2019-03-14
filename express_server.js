@@ -107,7 +107,10 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 })
 app.get("/register", (req, res) => {
-  res.render("registration");
+  const userId = req.cookies['userid'];
+  const currentUser = users[userId];
+  let templateVars = { username: currentUser ? currentUser.email : null };
+  res.render("registration", templateVars);
 })
 
 //this loads the urls/new page which has the form.
@@ -185,7 +188,7 @@ app.post("/login", (req, res) => {
     res.cookie('userid', id);
     res.redirect("/urls")
   } else {
-    throw "Your email or password is incorrect. Please try again"
+    throw "403: Your email or password is incorrect. Please try again"
   }
 })
 

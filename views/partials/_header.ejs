@@ -1,16 +1,12 @@
 <!-- Think need to change this so it has HTML styling. May then be able to take it out of the other view pages -->
 <h1>TinyApp</h1>
-
+<div>
 <% if (username) { %>
   <h4><%=username%> is logged in</h4>
   <form class="form-inline" method="POST" action="/logout">
   <button type="submit" class="btn btn-primary" name="username" value="<%=username%>">Logout</button>
 </form>
 <% } else { %>
-  <form method="get" action="/login">
-    <button type="submit" class="btn btn-primary">Login</button>
-  </form>
-  <form method="get" action="/register">
-    <button type="submit" class="btn btn-primary" action="/register">Register</button>
-  </form>
+  <p><a href="/login">Login</a> | <a href="/register">Register</a></p>
 <% } %>
+</div>
