@@ -3,11 +3,11 @@ const cookieSession = require('cookie-session')
 const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require('bcrypt');
-const uuidv4 = require('uuid/v4');
-uuidv4();
+// const uuidv4 = require('uuid/v4');
+// uuidv4();
 
 app.set("view engine", "ejs");
-// app.use(cookieParser());
+
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
@@ -70,7 +70,7 @@ const emailIDLookup = (email) => {
 const authenticate = (email, password) => {
   const usersArray = Object.values(users)
   for (var user in usersArray) {
-    if (usersArray[user].email === email && bcrypt.compareSync(password, users[user].password)) {
+    if (usersArray[user].email === email && bcrypt.compareSync(password, usersArray[user].password)) {
       return true;
     }
   }
@@ -187,7 +187,7 @@ app.post("/login", (req, res) => {
 
   if (authenticated) {
     const id = emailIDLookup(email)
-    res.cookie('userid', id);
+    req.session.user_id = users[id]["id"];
     res.redirect("/urls")
   } else {
     throw "403: Your email or password is incorrect. Please try again"
@@ -220,7 +220,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //this request clears the cookies.
 app.post("/logout", (req, res) => {
-  res.clearCookie('userid');
+  res.clearCookie('session');
   res.redirect("/urls")
 })
 
