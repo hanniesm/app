@@ -1,12 +1,8 @@
-//Am up to replacing the cookie username with cookie id. I've changed the create cookie function to pass the cookie ID instead
-//Next I need to replace the cookieusername in the template vars to look up the user based on the cookie ID.
-//Possibly I've approached this wrong, so might need to get some help from a mentor tomorrow.
-
-
-var express = require("express");
-var cookieParser = require('cookie-parser')
-var app = express();
-var PORT = 8080; // default port 8080
+const express = require("express");
+const cookieParser = require('cookie-parser')
+const app = express();
+const PORT = 8080; // default port 8080
+const bcrypt = require('bcrypt');
 
 app.set("view engine", "ejs");
 app.use(cookieParser())
@@ -46,7 +42,7 @@ const addUser = (email, password) => {
 
 // Think this also needs to check the password
 const emailLookup = (email) => {
-  for (var user in users) {
+  for (let user in users) {
     if (user.email === email) {
       return true
     }
@@ -64,6 +60,7 @@ const emailIDLookup = (email) => {
   }
 }
 
+//Need to update this with bcrypt
 const authenticate = (email, password) => {
   const usersArray = Object.values(users)
   for (var user in usersArray) {
@@ -222,7 +219,7 @@ app.post("/logout", (req, res) => {
 
 app.post("/register", (req, res) => {
   const email = req.body.email;
-  const password = req.body.password;
+  const password = bcrypt.hashSync(req.body.password, 10);
 
   if(email && password && !emailLookup(email)) {
   addUser(email, password)
