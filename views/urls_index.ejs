@@ -13,18 +13,22 @@
 <!--   Add EJS code here -->
 <% include ./partials/_header %>
   <!-- This link isn't working obvs -->
-  <a href='/urls/new'>Create New Tiny URL</a>
+  <% if (username) {%>
+    <a href='/urls/new'>Create New Tiny URL</a>
+  <% } %>
   <h2>My URLs</h2>
   <ul>
     <% for (var url in urls) { %>
-    <% const urlPath = "/urls/" + url%>
-    <% const deletePath = "/urls/" + url + "/delete" %>
+      <% const urlPath = "/urls/" + url%>
+      <% const deletePath = "/urls/" + url + "/delete" %>
       <li><%= url %>: <%= urls[url] %>
         <form class="form-inline" method="POST" action="<%=deletePath%>">
           <button type="submit" name="shortURL" value="<%=url%>">Delete
           </button>
         </form>
-        <a href=<%=urlPath%>>Edit</a>
+        <% if (username) {%>
+          <a href=<%=urlPath%>>Edit</a>
+        <% } %>
       </li>
     <% }; %>
   </ul>

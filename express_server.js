@@ -119,8 +119,12 @@ app.get("/register", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const userId = req.cookies['userid'];
   const currentUser = users[userId];
-  let templateVars = { username: currentUser ? currentUser.email : null };
-  res.render("urls_new", templateVars);
+  if (currentUser) {
+    let templateVars = { username: currentUser ? currentUser.email : null };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/urls")
+  }
 });
 
 //this loads the urls/:id pages.
