@@ -33,6 +33,7 @@ const users = {
 }
 
 //function creates a random number for the addUserID
+// Instead of doing this use const user_id = Object.key(usersDb).length + 1;
 const randomID = () => {
   return "user" + Math.floor((Math.random() * 100) + 1) + "RandomID";
 }
@@ -49,6 +50,7 @@ const addUser = (email, password) => {
   users[id] = newUser;
 }
 
+// Think this also needs to check the password
 const emailLookup = (email) => {
   for (var user in users) {
     if (user.email === email) {
@@ -57,7 +59,7 @@ const emailLookup = (email) => {
   }
 }
 
-//this function looks up the id given the email address.
+//this function looks up the id given the email address.Does this need to be modified to also check the password. See where this is being used.
 const emailIDLookup = (email) => {
   const usersArray = Object.values(users)
   for (var user in usersArray) {
@@ -86,28 +88,39 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-// app.get("/urls", (req, res) => {
-//   let templateVars = { greeting: 'Hello World' };
-//   res.render("hello_world", templateVars);
-// })
+/*app.get("/urls", (req, res) => {
+  let templateVars = { greeting: 'Hello World' };
+  res.render("hello_world", templateVars);
+})
+*/
 
+//Have changed cookie to userid. Need to check that this is actually working.
+//May also need to pass along the user informtion
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+// getting the userID from the cookies. Can be user ID or undefined -->
+  const userID = req.cookies['user_id'];
+//this gets users object from users DB. Can also be undefined -->
+  const currentUser = users[userId];
+  let templateVars = { urls: urlDatabase, username: currentUser ? currentUser.name : null }; //if no id then will return null
   res.render("urls_index", templateVars);
 })
 app.get("/register", (req, res) => {
   res.render("registration");
 })
 
-//this loads the urls/new page which has the form
+//this loads the urls/new page which has the form.
+//Have changed cookie to userid. Need to check that this is actually working.
+//May also need to pass along the user informtion
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["username"] };
+  let templateVars = { userid: req.cookies["userid"] };
   res.render("urls_new", templateVars);
 });
 
-//this loads the urls/:id pages
+//this loads the urls/:id pages.
+//Have changed cookie to userid. Need to check that this is actually working.
+//May also need to pass along the user informtion
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], userid: req.cookies["userid"] };
   console.log(templateVars);
   res.render("urls_show", templateVars);
 })
@@ -120,8 +133,8 @@ app.get("/u/:shortURL" , (req, res) => {
 
 //this is used when the form is filled in. It redirects to /url/:shortID
 app.post("/urls", (req, res) => {
-  let longURL = req.body.longURL;
-  let shortURL = generateRandomstring()
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomstring()
   urlDatabase[shortURL] = longURL;
   // console.log(urlDatabase)  // Log the POST request body to the console
  res.redirect(`/urls/${shortURL}`);
@@ -133,6 +146,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+//do I need to do the Object.keys here?
 app.post("/urls/:id", (req, res) => {
   const shortURL = Object.keys(req.body);
   const longURL = Object.values(req.body);
@@ -142,23 +156,25 @@ app.post("/urls/:id", (req, res) => {
 
 //This is the function I'm trying to replace
 
-// app.post("/login", (req, res) => {
-//   const cookieName = Object.keys(req.body);
-//   const cookieValue = Object.values(req.body);
-//   res.cookie(cookieName, cookieValue);
-//   res.redirect("/urls")
-// });
+/*app.post("/login", (req, res) => {
+  const cookieName = Object.keys(req.body);
+  const cookieValue = Object.values(req.body);
+  res.cookie(cookieName, cookieValue);
+  res.redirect("/urls")
+});*/
 
 //This is the replacement for the above. Rather than set the cookie as a name. It sets it with the id of the user.
+//This should also be checking the password of the user.
 app.post("/login", (req, res) => {
   const email = Object.values(req.body)[0];
   const id = emailIDLookup(email)
-  res.cookie("id", id);
+  res.cookie("userid", id);
   res.redirect("/urls")
 })
 
+//this request clears the cookies. Need to check that userid cookie is setting to make sure this is working correctly.
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("userid");
   res.redirect("/urls")
 })
 
