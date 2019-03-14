@@ -20,7 +20,7 @@
     <% for (var url in urls) { %>
         <% const urlPath = "/urls/" + url%>
         <% const deletePath = "/urls/" + url + "/delete" %>
-      <li><%= url %>: <%= urls[url].longURL %>
+      <li><%= urls[url].shortURL %>: <%= urls[url].longURL %>
         <form class="form-inline" method="POST" action="<%=deletePath%>">
           <button type="submit" name="shortURL" value="<%=url%>">Delete
           </button>
@@ -31,9 +31,11 @@
       </li>
     <% }; %>
   </ul>
-<% } %>
+
+<% } else { %>
+  <p>You need to login to see your URLs</p>
+  <% } %>
 
 </body>
 </html>
 
-  <!-- let templateVars = { urls: urlDatabase }; -->

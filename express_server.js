@@ -15,8 +15,8 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  b6UTxQ: { shortURL: "b6UTxQ", longURL: "https://www.tsn.ca", userID: "userRandomID" },
+  i3BoGr: { shortURL: "i3BoGr", longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
 const users = {
@@ -29,7 +29,7 @@ const users = {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
-  }
+  },
 }
 
 const addUser = (email, password) => {
@@ -73,6 +73,16 @@ const authenticate = (email, password) => {
   }
 }
 
+const userURLS = (id) => {
+  const urls = [];
+  for (var url in urlDatabase)
+    if (urlDatabase[url].userID === id) {
+      urls.push(urlDatabase[url])
+    }
+    return urls
+}
+
+
 //this function generates the shortURL
 function generateRandomstring() {
   return Math.random().toString(36).substr(2,5);
@@ -102,9 +112,11 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req, res) => {
   const userId = req.cookies['userid'];
   const currentUser = users[userId];
-  let templateVars = { urls: urlDatabase, username: currentUser ? currentUser.email : null }; //if no id then will return null
+  const userURLSArr = userURLS(userId);
+  let templateVars = { urls: userURLSArr, username: currentUser ? currentUser.email : null }; //if no id then will return null
   res.render("urls_index", templateVars);
 })
+
 app.get("/register", (req, res) => {
   const userId = req.cookies['userid'];
   const currentUser = users[userId];

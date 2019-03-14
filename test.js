@@ -1,3 +1,9 @@
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
+  different: { longURL: "https://www.google.ca", userID: "something" }
+}
+
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -11,39 +17,15 @@ const users = {
   }
 }
 
-//function creates a random number for the addUserID
-const randomID = () => {
-  return "user" + Math.floor((Math.random() * 100) + 1) + "RandomIDObject.values(";
-}
 
-const addUser = (email, password) => {
-  const id = randomID();
-
-  const newUser = {
-    id: id,
-    email: email,
-    password: password
-  }
-
-  users[id] = newUser;
-}
-
-const emailLookup = (email) => {
-  for (var user in users) {
-    if (user.email === email) {
-      return true
+const userURLS = (id) => {
+  const urls = [];
+  for (var url in urlDatabase)
+    if (urlDatabase[url].userID === id) {
+      urls.push(urlDatabase[url])
     }
-  }
+    return urls
 }
 
-const emailIDLookup = (email) => {
-  const usersArray = Object.values(users)
-  for (var user in usersArray) {
-    if (usersArray[user].email === email) {
-      console.log(usersArray[user].id)
-      return usersArray[user].id
-    }
-  }
-}
 
-emailIDLookup("user@example.com");
+userURLS("aJ48lW");
