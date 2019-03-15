@@ -75,12 +75,12 @@ const authenticate = (email, password) => {
 //This filters the url database for the urls for a given user
 const userURLS = (id) => {
   const urls = [];
-  for (let url in urlDatabase)
+  for (var url in urlDatabase) {
     if (urlDatabase[url].userID === id) {
-      urls.push(urlDatabase[url]);
+      urls.push(urlDatabase[url])
     }
-
-    return urls;
+  }
+  return urls
 }
 
 //this function generates a random string which is used for the shortURL
@@ -101,11 +101,15 @@ app.get("/urls.json", (req, res) => {
 });
 
 //loads the urls page and sets the user information from the cookies.
+//Have discovered a bug here. If register new user, add urls. The urls aren't showing in the myURL list. This was working earlier. Have checked function and can't work out where it's going wrong.
 app.get("/urls", (req, res) => {
   const userId = req.session.user_id;
   const currentUser = users[userId];
-  const userURLSArr = userURLS(userId);
-  let templateVars = { urls: userURLSArr, username: currentUser ? currentUser.email : null }; //if no id then will return null
+  const urls = userURLS(userId)
+  let templateVars = {
+    urls: urls,
+    username: currentUser ? currentUser.email : null
+  }; //if no id then will return null
   res.render("urls_index", templateVars);
 })
 
@@ -132,9 +136,10 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.session.user_id;
   const currentUser = users[userId];
+  const longURL = urlDatabase[req.params.shortURL].longURL
   let templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: longURL,
     username: currentUser ? currentUser.email : null
   };
 
@@ -151,6 +156,7 @@ app.get("/u/:shortURL" , (req, res) => {
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomstring()
+  const id = req.session.user_id;
   const newURL = {
     longURL: longURL,
     userId: req.session.user_id

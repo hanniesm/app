@@ -20,6 +20,7 @@
   <h2>My URLs</h2>
   <ul>
     <% for (var url in urls) { %>
+    <%=url%> <%=urls[url]%>
         <% const urlPath = "/urls/" + url%>
         <% const deletePath = "/urls/" + url + "/delete" %>
       <li><%= urls[url].shortURL %>: <%= urls[url].longURL %>
