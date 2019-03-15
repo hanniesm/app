@@ -185,12 +185,16 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   const authenticated = authenticate(email, password);
 
-  if (authenticated) {
-    const id = emailIDLookup(email);
-    req.session.user_id = users[id]["id"];
-    res.redirect("/urls");
+  if (emailLookup(email)) {
+    if (authenticated) {
+      const id = emailIDLookup(email);
+      req.session.user_id = users[id]["id"];
+      res.redirect("/urls");
+    } else {
+      throw "403: Your email or password is incorrect. Please try again";
+    }
   } else {
-    throw "403: Your email or password is incorrect. Please try again";
+    throw "You are trying to login, but your email is not in the system. Have you registered?"
   }
 })
 
