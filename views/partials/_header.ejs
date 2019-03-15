@@ -1,6 +1,5 @@
-<!-- Think need to change this so it has HTML styling. May then be able to take it out of the other view pages -->
-<h1>TinyApp</h1>
-<div>
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+  <h1>TinyApp</h1>
 <% if (username) { %>
   <h4><%=username%> is logged in</h4>
   <form class="form-inline" method="POST" action="/logout">
@@ -9,4 +8,4 @@
 <% } else { %>
   <p><a href="/login">Login</a> | <a href="/register">Register</a></p>
 <% } %>
-</div>
+</nav>
