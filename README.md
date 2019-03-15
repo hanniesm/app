@@ -16,7 +16,8 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ##Final Product
 !["Screenshot of Login Page"](https://raw.githubusercontent.com/hanniesm/app/master/docs/login.png)
-!["Screenshot of Index Page"](https://raw.githubusercontent.com/hanniesm/app/master/docs/Screenshot%20from%202019-03-14%2020-31-32.png)
+!["Screenshot of a list of URLs"](https://raw.githubusercontent.com/hanniesm/app/master/docs/EditShortURL.png)
+!["Screenshot of URL editor"](https://raw.githubusercontent.com/hanniesm/app/master/docs/EditShortURL.png)
 
-##Enjoy
-
+##Hope you enjoy my app.
+This app was brought to you by tea drinks, occassionally bouts of frustration, followed by more tea drinking.
