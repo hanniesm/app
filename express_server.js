@@ -89,7 +89,13 @@ function generateRandomstring() {
 }
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const userId = req.session.user_id;
+  const currentUser = users[userId];
+  if (currentUser) {
+    res.redirect("/urls")
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/hello", (req, res) => {
