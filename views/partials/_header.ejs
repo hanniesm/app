@@ -1,8 +1,7 @@
 <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
   <h1>TinyApp</h1>
 <% if (username) { %>
-  <h4><%=username%> is logged in</h4>
-  <form class="form-inline" method="POST" action="/logout">
+  <form class="form-inline" method="POST" action="/logout"><%=username%> is logged in
   <button type="submit" class="btn btn-primary" name="username" value="<%=username%>">Logout</button>
 </form>
 <% } else { %>

@@ -177,6 +177,7 @@ app.post("/login", (req, res) => {
   const email = Object.values(req.body)[0];
   const password = req.body.password;
   const authenticated = authenticate(email, password);
+  console.log(email, password, authenticated)
 
   if (authenticated) {
     const id = emailIDLookup(email);
