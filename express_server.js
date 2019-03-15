@@ -142,14 +142,17 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.session.user_id;
   const currentUser = users[userId];
-  const longURL = urlDatabase[req.params.shortURL].longURL
-  let templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: longURL,
-    username: currentUser ? currentUser.email : null
-  };
+  if (urlDatabase[req.params.shortURL]) {
+    let templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
+      username: currentUser ? currentUser.email : null
+    };
 
-  res.render("urls_show", templateVars);
+    res.render("urls_show", templateVars);
+  } else {
+    throw "We are looking for that shortURL but it isn't home :("
+  }
 })
 
 //this will be used to redirect the short URL to the long URL
