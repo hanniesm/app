@@ -12,10 +12,11 @@
 <body style="font-size:20px; padding:50px;">
 
 <% include ./partials/_header %>
-
+<br>
   <% if (username) {%>
-    <a href='/urls/new'>Create New Tiny URL</a>
+    <h2><a href='/urls/new'>Create New Tiny URL</a></h2>
 
+<br>
   <h2>My URLs</h2>
   <ul>
     <% for (var url in urls) { %>
