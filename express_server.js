@@ -122,8 +122,12 @@ app.get("/urls", (req, res) => {
 app.get("/register", (req, res) => {
   const userId = req.session.user_id;
   const currentUser = users[userId];
-  let templateVars = { username: currentUser ? currentUser.email : null };
-  res.render("registration", templateVars);
+  if (currentUser) {
+    res.redirect("/urls");
+  } else {
+    let templateVars = { username: currentUser ? currentUser.email : null };
+    res.render("registration", templateVars);
+  }
 })
 
 //this loads the urls/new page which has the form to add a new url.
