@@ -142,23 +142,27 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.session.user_id;
   const currentUser = users[userId];
-  if (urlDatabase[req.params.shortURL]) {
-    let templateVars = {
-      shortURL: req.params.shortURL,
-      longURL: urlDatabase[req.params.shortURL].longURL,
-      username: currentUser ? currentUser.email : null
-    };
+  if (currentUser) {
+    if (urlDatabase[req.params.shortURL]) {
+      let templateVars = {
+        shortURL: req.params.shortURL,
+        longURL: urlDatabase[req.params.shortURL].longURL,
+        username: currentUser ? currentUser.email : null
+      };
 
-    res.render("urls_show", templateVars);
+      res.render("urls_show", templateVars);
+    } else {
+      throw "We are looking for that shortURL but it isn't home :("
+    }
   } else {
-    throw "We are looking for that shortURL but it isn't home :("
+    throw "You need to be logged in to see that!"
   }
 })
 
 //this will be used to redirect the short URL to the long URL
 app.get("/u/:shortURL" , (req, res) => {
- let longURL = urlDatabase[req.params.shortURL].longURL;
- res.redirect(`${longURL}`);
+  let longURL = urlDatabase[req.params.shortURL].longURL;
+  res.redirect(`${longURL}`);
 })
 
 //this is used when the form is filled in. It redirects to /url/:shortID
@@ -184,7 +188,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   const shortURL = Object.keys(req.body);
   const longURL = Object.values(req.body);
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL].longURL = longURL;
   res.redirect("/urls");
 })
 
