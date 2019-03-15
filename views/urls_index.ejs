@@ -23,7 +23,7 @@
     <div>
         <% const urlPath = "/urls/" + urls[url].shortURL%>
         <% const deletePath = "/urls/" + urls[url].shortURL + "/delete" %>
-      <li><%= urls[url].shortURL %>: <%= urls[url].longURL %>
+      <li><h4><%= urls[url].shortURL %>: <%= urls[url].longURL %></h4>
         <form class="form-inline" method="POST" action="<%=deletePath%>">
           <button type="submit" name="shortURL" value="<%=urls[url].shortURL%>">Delete</button>
         </form>

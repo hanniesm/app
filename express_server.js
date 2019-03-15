@@ -202,13 +202,17 @@ app.post("/login", (req, res) => {
 app.get("/login", (req, res) => {
   const userId = req.session.user_id;
   const currentUser = users[userId];
-  let templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
-    username: currentUser ? currentUser.email : null
-  };
+  if (currentUser) {
+    res.redirect("/urls")
+  } else {
+    let templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL],
+      username: currentUser ? currentUser.email : null
+    };
 
-  res.render("login", templateVars);
+    res.render("login", templateVars);
+  };
 })
 
 app.get("/urls/:shortURL", (req, res) => {
