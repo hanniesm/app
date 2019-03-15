@@ -134,7 +134,7 @@ app.get("/urls/new", (req, res) => {
     let templateVars = { username: currentUser ? currentUser.email : null };
     res.render("urls_new", templateVars);
   } else {
-    res.redirect("/urls");
+    res.redirect("/login");
   }
 });
 
