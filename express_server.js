@@ -32,9 +32,9 @@ const users = {
   },
 };
 
+//id is setting as number.
 const addUser = (email, password) => {
   const id = Object.keys(users).length + 1;
-
   const newUser = {
     id: id,
     email: email,
@@ -75,7 +75,7 @@ const authenticate = (email, password) => {
 //This filters the url database for the urls for a given user
 const userURLS = (id) => {
   const urls = [];
-  for (var url in urlDatabase) {
+  for (const url in urlDatabase) {
     if (urlDatabase[url].userID === id) {
       urls.push(urlDatabase[url])
     }
@@ -158,8 +158,9 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomstring()
   const id = req.session.user_id;
   const newURL = {
+    shortURL: shortURL,
     longURL: longURL,
-    userId: req.session.user_id
+    userID: id
     };
   urlDatabase[shortURL] = newURL;
   res.redirect(`/urls/${shortURL}`);
@@ -183,7 +184,6 @@ app.post("/login", (req, res) => {
   const email = Object.values(req.body)[0];
   const password = req.body.password;
   const authenticated = authenticate(email, password);
-  console.log(email, password, authenticated)
 
   if (authenticated) {
     const id = emailIDLookup(email);

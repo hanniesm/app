@@ -20,16 +20,13 @@
   <h2>My URLs</h2>
   <ul>
     <% for (var url in urls) { %>
-    <%=url%> <%=urls[url]%>
-        <% const urlPath = "/urls/" + url%>
-        <% const deletePath = "/urls/" + url + "/delete" %>
+        <% const urlPath = "/urls/" + urls[url].shortURL%>
+        <% const deletePath = "/urls/" + urls[url].shortURL + "/delete" %>
       <li><%= urls[url].shortURL %>: <%= urls[url].longURL %>
         <form class="form-inline" method="POST" action="<%=deletePath%>">
-          <button type="submit" name="shortURL" value="<%=url%>">Delete</button>
+          <button type="submit" name="shortURL" value="<%=urls[url].shortURL%>">Delete</button>
         </form>
-        <% if (username) {%>
           <a href=<%=urlPath%>>Edit</a>
-        <% } %>
       </li>
     <% }; %>
   </ul>

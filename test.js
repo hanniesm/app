@@ -19,7 +19,16 @@ const userURLS = (id) => {
 
 
 
-
+// app.get("/urls", (req, res) => {
+//   const userId = req.session.user_id;
+//   const currentUser = users[userId];
+//   const urls = userURLS(userId)
+//   let templateVars = {
+//     urls: urls,
+//     username: currentUser ? currentUser.email : null
+//   }; //if no id then will return null
+//   res.render("urls_index", templateVars);
+// })
 
 
 
@@ -35,4 +44,5 @@ const userURLS = (id) => {
 //   }
 // }
 
-console.log(userURLS("3"));
+console.log(userURLS("aJ48lW"));
+
