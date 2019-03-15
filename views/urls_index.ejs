@@ -18,20 +18,32 @@
 
 <br>
   <h2>My URLs</h2>
-  <ul>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">ShortURL</th>
+      <th scope="col">LongURL</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
     <% for (var url in urls) { %>
-    <div>
-        <% const urlPath = "/urls/" + urls[url].shortURL%>
-        <% const deletePath = "/urls/" + urls[url].shortURL + "/delete" %>
-      <li><h4><%= urls[url].shortURL %>: <%= urls[url].longURL %></h4>
-        <form class="form-inline" method="POST" action="<%=deletePath%>">
+    <% const urlPath = "/urls/" + urls[url].shortURL%>
+    <% const deletePath = "/urls/" + urls[url].shortURL + "/delete" %>
+    <tr>
+      <th scope="row"><%= urls[url].shortURL %></th>
+      <td><%= urls[url].longURL %></td>
+      <td><form class="form-inline" method="POST" action="<%=deletePath%>">
           <button type="submit" name="shortURL" value="<%=urls[url].shortURL%>">Delete</button>
-        </form>
-          <a href=<%=urlPath%>>Edit</a>
-      </li>
-    <% }; %>
-  </ul>
-  <div>
+        </form></td>
+      <td><a href=<%=urlPath%>>Edit</a></td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>
+
 
 <% } else { %>
   <p>You need to login to see your URLs</p>
